@@ -16,18 +16,18 @@ import org.springframework.web.bind.annotation.RequestMapping
 class PersonRestController(@Autowired val repo: PersonRepo) {
 
     @RequestMapping(path = ["/all"], method = [RequestMethod.GET])
-    fun findAllPeople(): MutableList<Person> = repo.findAll()
+    fun fetchAllPerson(): MutableList<Person> = repo.findAll()
 
     @RequestMapping(path = ["/get/{id}"], method = [RequestMethod.GET])
-    fun findPersonById(@PathVariable("id") id: ObjectId) = repo.findById(id)
+    fun fetchPerson(@PathVariable("id") id: String) = repo.findById(id)
 
     @RequestMapping(path = ["/update/{id}"], method = [RequestMethod.PUT])
-    fun updatePerson(@RequestParam("id") id: ObjectId, @RequestBody @Valid person: Person) = repo.save(person.apply { this.id = id })
+    fun updatePerson(@RequestParam("id") id: String, @RequestBody @Valid person: Person) = repo.save(person.apply { this.id = id })
 
     @RequestMapping(path = ["/save"], method = [RequestMethod.POST])
-    fun savePerson(@RequestBody @Valid person: Person) = repo.save(person.apply { this.id = ObjectId.get() })
+    fun savePerson(@RequestBody @Valid person: Person) = repo.save(person.apply { this.id = ObjectId.get().toString() })
 
     @RequestMapping(path = ["/delete/{id}"], method = [RequestMethod.DELETE])
-    fun deletePet(@PathVariable id: ObjectId) = repo.findById(id)?.let { repo.delete(it) }
+    fun deletePerson(@PathVariable id: String) = repo.delete(repo.findById(id).orElse(null))
 
 }

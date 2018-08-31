@@ -1,0 +1,146 @@
+{
+	"info": {
+		"_postman_id": "19d86417-b68a-4f64-b401-16bf3a725a6d",
+		"name": "Persons Mongo Demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Persons - All",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "127.0.0.1:8080/persons/all",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"persons",
+						"all"
+					]
+				},
+				"description": "Retrieve all perosn documents."
+			},
+			"response": []
+		},
+		{
+			"name": "Persons - Get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "127.0.0.1:8080/persons/{id}",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"persons",
+						"{id}"
+					]
+				},
+				"description": "Retrieve a single record matching the `id` path variable."
+			},
+			"response": []
+		},
+		{
+			"name": "Persons - Save",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n\t\"firstName\": \"Testing\",\n    \"lastName\": \"Insert1\"\n\n}"
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/persons/save",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"persons",
+						"save"
+					]
+				},
+				"description": "Store a person decument and get it back with a brand new id."
+			},
+			"response": []
+		},
+		{
+			"name": "Persons - Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "127.0.0.1:8080/persons/delete/{id}",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"persons",
+						"delete",
+						"{id}"
+					]
+				},
+				"description": "Delete a document matchin' the `id` path variable."
+			},
+			"response": []
+		},
+		{
+			"name": "Persosn - Update",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n\t\"firstName\": \"Changed\",\n    \"lastName\": \"McNameovsi\"\n\n}"
+				},
+				"url": {
+					"raw": "127.0.0.1:8080/persons/5b888619b9ebd658009213a8",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"persons",
+						"5b888619b9ebd658009213a8"
+					]
+				},
+				"description": "Update the document matching the `id` path variable with the data in `body`"
+			},
+			"response": []
+		}
+	]
+}
