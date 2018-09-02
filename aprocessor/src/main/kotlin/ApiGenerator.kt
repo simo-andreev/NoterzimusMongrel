@@ -2,14 +2,18 @@ package annotation
 
 import bg.o.sim.annotations.ExposedModel
 import com.google.auto.service.AutoService
-import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.*
 import java.io.File
+import java.nio.file.FileSystem
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
+import javax.lang.model.element.PackageElement
+
+
 
 @AutoService(Processor::class)
 class ApiGenerator : AbstractProcessor() {
@@ -41,18 +45,19 @@ class ApiGenerator : AbstractProcessor() {
 //            }
 
             val mappingRoot = element.getAnnotation(annotClass).mappingRoot
-            val pckge = processingEnv.elementUtils.getPackageOf(element).toString()
+            val pkg = processingEnv.elementUtils.getPackageOf(element).toString()
 
-            generateTemplatedClass(mappingRoot, pckge, element as TypeElement)
+            generateTemplatedClass(mappingRoot, pkg, element as TypeElement)
         }
 
 
         return true
     }
 
-    private fun generateTemplatedClass(mappingRoot: String, pckge: String, element: TypeElement){
-        // todo - packaging
+    private fun generateTemplatedClass(mappingRoot: String, pkg: String, element: TypeElement){
         val template = """
+            package $pkg
+
             import bg.o.sim.annotations.ExposedModel
             import bg.o.sim.web.BaseEntity
             import bg.o.sim.web.CrudApiController
@@ -69,16 +74,17 @@ class ApiGenerator : AbstractProcessor() {
             class ${mappingRoot.capitalize()}Api(@Autowired repo: ${mappingRoot.capitalize()}Repo) : CrudApiController<${element.simpleName}>(repo)
         """.trimIndent()
 
+        
         val fileName = "${mappingRoot.capitalize()}Repo"
-        val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
+        val kaptKotlinGeneratedDir = "${processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]}/${pkg.replace("\\.", File.separator )}"
         File(kaptKotlinGeneratedDir).mkdirs()
         File(kaptKotlinGeneratedDir, "$fileName.kt").apply { createNewFile() }.printWriter().use { out ->
             out.print(template)
         }
     }
 
-    private fun generateClass(mappingRoot: String, pckge: String, element: TypeElement) {
-        val fileName = "${mappingRoot.capitalize()}Repo"
+    private fun generateClass(mappingRoot: String, pkg: String, element: TypeElement) {
+//        val fileName = "${mappingRoot.capitalize()}Repo"
 //
 //        val entityType = element.asClassName()
 //        val stringType = ClassName("kotlin", "String")
@@ -111,13 +117,13 @@ class ApiGenerator : AbstractProcessor() {
 //                .superclass(parameterizedApiType)
 //                .addSuperclassConstructorParameter("%N", primConstructorType)
 //                .build()
-        val file = FileSpec.builder(pckge, fileName)
-                .addComment("TESTINS")
-                .build()
-
-
-        val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
-        file.writeTo(File(kaptKotlinGeneratedDir, "$fileName.kt"))
+//        val file = FileSpec.builder(pkg, fileName)
+//                .addType(parameterizedRepoInterface)
+//                .build()
+//
+//
+//        val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
+//        file.writeTo(File(kaptKotlinGeneratedDir, "$fileName.kt"))
 //        File(kaptKotlinGeneratedDir).mkdir()
 //        File(kaptKotlinGeneratedDir, "$fileName.kt").createNewFile()
     }
