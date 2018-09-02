@@ -22,6 +22,6 @@ allprojects {
 group 'bg.o.sim'
 version '0.1.0'
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
+//task clean(type: Delete) {
+//    delete rootProject.buildDir
+//}

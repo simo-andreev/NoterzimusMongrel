@@ -1,11 +1,12 @@
 package annotation
 
+import bg.o.sim.annotations.ExposedModel
 import com.google.auto.service.AutoService
+import com.squareup.kotlinpoet.FileSpec
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
-import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
@@ -18,7 +19,7 @@ class ApiGenerator : AbstractProcessor() {
     }
 
     override fun getSupportedAnnotationTypes(): Set<String> {
-        return setOf(ExposedModel::class.qualifiedName!!)
+        return mutableSetOf(ExposedModel::class.java.name)
     }
 
     override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
@@ -42,11 +43,38 @@ class ApiGenerator : AbstractProcessor() {
             val mappingRoot = element.getAnnotation(annotClass).mappingRoot
             val pckge = processingEnv.elementUtils.getPackageOf(element).toString()
 
-            generateClass(mappingRoot, pckge, element as TypeElement)
+            generateTemplatedClass(mappingRoot, pckge, element as TypeElement)
         }
 
 
         return true
+    }
+
+    private fun generateTemplatedClass(mappingRoot: String, pckge: String, element: TypeElement){
+        // todo - packaging
+        val template = """
+            import bg.o.sim.annotations.ExposedModel
+            import bg.o.sim.web.BaseEntity
+            import bg.o.sim.web.CrudApiController
+            import org.springframework.beans.factory.annotation.Autowired
+            import org.springframework.data.mongodb.repository.MongoRepository
+            import org.springframework.web.bind.annotation.RequestMapping
+            import org.springframework.web.bind.annotation.RestController
+            import ${element.qualifiedName}
+
+            interface ${mappingRoot.capitalize()}Repo : MongoRepository<${element.simpleName}, String>
+
+            @RestController
+            @RequestMapping("${mappingRoot}")
+            class ${mappingRoot.capitalize()}Api(@Autowired repo: ${mappingRoot.capitalize()}Repo) : CrudApiController<${element.simpleName}>(repo)
+        """.trimIndent()
+
+        val fileName = "${mappingRoot.capitalize()}Repo"
+        val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
+        File(kaptKotlinGeneratedDir).mkdirs()
+        File(kaptKotlinGeneratedDir, "$fileName.kt").apply { createNewFile() }.printWriter().use { out ->
+            out.print(template)
+        }
     }
 
     private fun generateClass(mappingRoot: String, pckge: String, element: TypeElement) {
@@ -83,18 +111,15 @@ class ApiGenerator : AbstractProcessor() {
 //                .superclass(parameterizedApiType)
 //                .addSuperclassConstructorParameter("%N", primConstructorType)
 //                .build()
-//        val file = FileSpec.builder(pckge, fileName)
-//                .addImport(Autowired::class)
-//                .addImport(MongoRepository::class)
-//                .addImport(RequestMapping::class)
-//                .addImport(RestController::class)
-//                .addType(parameterizedRepoInterface)
-//                .addType(apiClass)
-//                .build()
+        val file = FileSpec.builder(pckge, fileName)
+                .addComment("TESTINS")
+                .build()
 
 
         val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]
-        File(kaptKotlinGeneratedDir, "$fileName.kt").createNewFile()
+        file.writeTo(File(kaptKotlinGeneratedDir, "$fileName.kt"))
+//        File(kaptKotlinGeneratedDir).mkdir()
+//        File(kaptKotlinGeneratedDir, "$fileName.kt").createNewFile()
     }
 
 //    private fun elementIsBaseEntity(element: Element): Boolean {
@@ -107,9 +132,4 @@ class ApiGenerator : AbstractProcessor() {
 //    }
 }
 
-
-
-@Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FILE)
-annotation class ExposedModel(val mappingRoot: String)
 
