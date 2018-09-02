@@ -2,17 +2,14 @@ package annotation
 
 import bg.o.sim.annotations.ExposedModel
 import com.google.auto.service.AutoService
-import com.squareup.kotlinpoet.*
 import java.io.File
-import java.nio.file.FileSystem
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
+import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
-import javax.lang.model.element.PackageElement
-
 
 
 @AutoService(Processor::class)
@@ -83,6 +80,16 @@ class ApiGenerator : AbstractProcessor() {
         }
     }
 
+    // TODO - decide how to handle BaseEntity as super-class
+//    private fun elementIsBaseEntity(element: Element): Boolean {
+//        return processingEnv
+//                .typeUtils
+//                .isSubtype(
+//                        element.asType(),
+//                        processingEnv.elementUtils.getTypeElement(BaseEntity::class.java.name).asType()
+//                )
+//    }
+
     private fun generateClass(mappingRoot: String, pkg: String, element: TypeElement) {
 //        val fileName = "${mappingRoot.capitalize()}Repo"
 //
@@ -127,15 +134,6 @@ class ApiGenerator : AbstractProcessor() {
 //        File(kaptKotlinGeneratedDir).mkdir()
 //        File(kaptKotlinGeneratedDir, "$fileName.kt").createNewFile()
     }
-
-//    private fun elementIsBaseEntity(element: Element): Boolean {
-//        return processingEnv
-//                .typeUtils
-//                .isSubtype(
-//                        element.asType(),
-//                        processingEnv.elementUtils.getTypeElement(BaseEntity::class.java.name).asType()
-//                )
-//    }
 }
 
 
