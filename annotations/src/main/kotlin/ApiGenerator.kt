@@ -1,6 +1,5 @@
-package bg.o.sim.annotation
+package annotation
 
-import bg.o.sim.BaseEntity
 import com.google.auto.service.AutoService
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
@@ -34,7 +33,7 @@ class ApiGenerator : AbstractProcessor() {
             }
 
 //            if (!elementIsBaseEntity(element)) {
-//                val error = annotClass.toString() + " can only be applied to bg.o.sim.web.BaseEntity subclasses! " +
+//                val error = annotClass.toString() + " can only be applied to web.BaseEntity subclasses! " +
 //                        "Failed for [" + element.simpleName + "]"
 //                processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, error)
 //                return true
@@ -98,14 +97,14 @@ class ApiGenerator : AbstractProcessor() {
         File(kaptKotlinGeneratedDir, "$fileName.kt").createNewFile()
     }
 
-    private fun elementIsBaseEntity(element: Element): Boolean {
-        return processingEnv
-                .typeUtils
-                .isSubtype(
-                        element.asType(),
-                        processingEnv.elementUtils.getTypeElement(BaseEntity::class.java.name).asType()
-                )
-    }
+//    private fun elementIsBaseEntity(element: Element): Boolean {
+//        return processingEnv
+//                .typeUtils
+//                .isSubtype(
+//                        element.asType(),
+//                        processingEnv.elementUtils.getTypeElement(BaseEntity::class.java.name).asType()
+//                )
+//    }
 }
 
 
