@@ -1,4 +1,4 @@
-package annotation
+package bg.o.sim
 
 import bg.o.sim.annotations.ExposedModel
 import com.google.auto.service.AutoService
@@ -9,7 +9,6 @@ import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
-
 
 @AutoService(Processor::class)
 class ApiGenerator : AbstractProcessor() {
@@ -63,7 +62,7 @@ class ApiGenerator : AbstractProcessor() {
             class ${mappingRoot.capitalize()}Api(@Autowired repo: ${mappingRoot.capitalize()}Repo) : CrudApiController<${element.simpleName}>(repo)
         """.trimIndent()
 
-        
+
         val fileName = "${mappingRoot.capitalize()}Repo"
         val kaptKotlinGeneratedDir = "${processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]}/${pkg.replace("\\.", File.separator )}"
         File(kaptKotlinGeneratedDir).mkdirs()
