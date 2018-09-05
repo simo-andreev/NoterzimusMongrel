@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
-
+# suppress inspection "UnusedProperty" for whole file
+# suppress inspection "SpellCheckingInspection" for whole file
 ##############################################################################
 ##
 ##  Gradle start up script for UN*X
