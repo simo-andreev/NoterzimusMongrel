@@ -1,4 +1,4 @@
-package bg.o.sim
+package bg.o.sim.aprocessor
 
 import bg.o.sim.annotations.ExposedModel
 import com.google.auto.service.AutoService
@@ -47,8 +47,8 @@ class ApiGenerator : AbstractProcessor() {
             package $pkg
 
             import bg.o.sim.annotations.ExposedModel
-            import bg.o.sim.web.BaseEntity
-            import bg.o.sim.web.CrudApiController
+            import bg.o.sim.application.web.BaseEntity
+            import bg.o.sim.application.web.CrudApiController
             import org.springframework.beans.factory.annotation.Autowired
             import org.springframework.data.mongodb.repository.MongoRepository
             import org.springframework.web.bind.annotation.RequestMapping
@@ -56,7 +56,6 @@ class ApiGenerator : AbstractProcessor() {
             import ${element.qualifiedName}
 
             interface ${mappingRoot.capitalize()}Repo : MongoRepository<${element.simpleName}, String>
-
             @RestController
             @RequestMapping("$mappingRoot")
             class ${mappingRoot.capitalize()}Api(@Autowired repo: ${mappingRoot.capitalize()}Repo) : CrudApiController<${element.simpleName}>(repo)

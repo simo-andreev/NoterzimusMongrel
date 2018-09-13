@@ -1,4 +1,4 @@
-package bg.o.sim.web
+package bg.o.sim.application.web
 
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
