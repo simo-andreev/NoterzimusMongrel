@@ -42,6 +42,7 @@ data class TransactionLongform(
 // Annotate with @ExposedModel, to generate the above demonstrated Api interface and Repo class.
 // the annotation parameter is forwarded to a @RequestMapping annotation, where it acts as explained previously.
 // The annotated class is the Kotlin object that will be JSON-ed in both web requests and MongoDB persistence.
+
 @ExposedModel("transact_short")
 data class TransactionShortform(
         val origin_id: String,
