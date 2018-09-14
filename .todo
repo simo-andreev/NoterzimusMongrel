@@ -1,0 +1,19 @@
+## Format defined as per https://github.com/matthewpalmer/.todo
+## TODOs for the whole project in general -i.e. features, refactor and version goals etc ##
+
+## Chores:
+- []  Unit tests
+- []  Any other tests?
+- []  README.md
+
+## Patch goals:
+- [] Documentation
+
+## Minor-v goals:
+- []  Add an annotation super-class to @ExposedModel - @PersistedModel - that only stores
+        (and I guess provides an internal CRUD API) - i.e. does not add @RestController to the Repo//Api class
++ []  Add an optional - mappedBy : KClass//Class - parameter to @ExposedModel that lets user provide CrudApi sub-class
+        implementing custom persistence and exposure logic
+
+## Major-v goals:
+- []  Implement (optional) security and authentication

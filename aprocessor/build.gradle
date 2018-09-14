@@ -2,22 +2,39 @@ apply plugin: 'java-library'
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-kapt'
 
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-
-    implementation "com.squareup:kotlinpoet:1.0.0-RC1"
-    implementation "com.google.auto.service:auto-service:1.0-rc4"
-    kapt "com.google.auto.service:auto-service:1.0-rc4"
-
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':annotations')
-}
-
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+// Kotlin docs tool module-specific config
+dokka {
+    // Specifies locations of project source on the Web.
+    // Dokka generates "source" links for each declaration.
+    linkMapping {
+        // Source directories
+        dir = "src/main/kotlin/bg/o/sim/aprocessor"
+        // URL showing where the source code can be accessed through the web browser
+        url = "https://github.com/simo-andreev/Mongrel/tree/master/aprocessor/src/main/kotlin/bg/o/sim/"
+        suffix = "#L" // Suffix which is used to append the line number to the URL. Use #L for GitHub
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+
+    // KotlinPoet - st. Wharton's migration fo JavaPoet code-gen lib to Kotlin.
+    implementation "com.squareup:kotlinpoet:1.0.0-RC1"
+    // G-Autoservice provides an annotation which registers marked Annotation processors automagically
+    implementation "com.google.auto.service:auto-service:1.0-rc4"
+    kapt "com.google.auto.service:auto-service:1.0-rc4"
+
+
+    // Annotations module - holds ... annotations ... Yup.
+    implementation project(':annotations')
 }
