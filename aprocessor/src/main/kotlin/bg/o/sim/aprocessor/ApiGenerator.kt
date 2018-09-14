@@ -10,14 +10,16 @@ import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
 
 /**
- * Creates files parsable by Spring Boot Starter -data-rest, -data-mongodb-reactive and -web.
+ * Creates files parsable by Spring Boot Starter's -data-rest, -data-mongodb-reactive and -web packages.
  * Spring then takes said generated classes and props-up a MongoDb CRUD controller and corresponding REST APIs.
+ *
  *
  * To be used on [BaseEntity][bg.o.sim.application.web.BaseEntity]. If annotated element is _not_ a subclass
  * of BaseEntity, compilation will fail.
  *
- * *Important!* _If running in Intellij Idea,
- * make sure to check `Build Tools->Gradle->Runner->Delegate IDE build/run actions to gradle'`*_
+ *
+ * *Important!* _If running in Intellij Idea, you might notice this Processor isn't called.
+ * To fix, make sure to activate `Build Tools->Gradle->Runner->Delegate IDE build/run actions to gradle'`*_
  */
 @Suppress("unused") // used during build, just not referenced in user code.
 @AutoService(Processor::class)
@@ -31,24 +33,30 @@ internal class ApiGenerator : AbstractProcessor() {
 
     override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
 
+        // Supported Annotation:
         val annotationClass = ExposedModel::class.java
+
+        // go through all the elements that the system passes to the ApiGenerator
         for (element in roundEnv.getElementsAnnotatedWith(annotationClass)) {
 
             // @ExposedModel is only applicable to classes.
             if (element.kind != ElementKind.CLASS) {
-                val error = "$annotationClass can only be applied to classes! Failed for [${element.simpleName}]"
+                val error = "${this.javaClass.canonicalName} : " +
+                        "${annotationClass.simpleName} can only be applied to classes!" +
+                        " Failed for ${element.kind} [${element.simpleName}]"
+
+                // Report error, so it gives informative compilation error.
                 processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, error)
                 return true
             }
 
             // @ExposedModel's mappingRoot parameter. It will be passed as a
-            // org.springframework.web.bind.annotation.RequestMapping's value, further on.
+            // org.springframework.web.bind.annotation.RequestMapping's value in generated code.
             val mappingRoot = element.getAnnotation(annotationClass).mappingRoot
             val pkg = processingEnv.elementUtils.getPackageOf(element).toString()
 
             generateTemplatedClass(mappingRoot, pkg, element as TypeElement)
         }
-
 
         return true
     }
@@ -57,7 +65,7 @@ internal class ApiGenerator : AbstractProcessor() {
      * Populate a Kotlin String template, with content similar to
      * the longform example in [the example][bg.o.sim.application.model.TransactionApi].
      * Afterwards the templated String is written to a file in the `build` directory of
-     * the element's module, under the same pakcgae directive as the `element` itself.
+     * the element's module, under the same package directive as the `element` itself.
      */
     private fun generateTemplatedClass(mappingRoot: String, pkg: String, element: TypeElement){
         val template = """
@@ -79,7 +87,7 @@ internal class ApiGenerator : AbstractProcessor() {
         """.trimIndent()
 
 
-        // get f.name and an appropriate directory to place it in.
+        // build file name and get an appropriate directory to place it in.
         val fileName = "${mappingRoot.capitalize()}Repo"
         val kaptKotlinGeneratedDir = "${processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]}/${pkg.replace("\\.", File.separator )}"
 
