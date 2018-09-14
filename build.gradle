@@ -1,6 +1,6 @@
 
 group 'bg.o.sim'
-version '0.1.2-SNAPSHOT'
+version '0.1.2'
 
 buildscript {
     ext {
