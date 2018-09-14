@@ -20,6 +20,10 @@ import javax.tools.Diagnostic
  *
  * *Important!* _If running in Intellij Idea, you might notice this Processor isn't called.
  * To fix, make sure to activate `Build Tools->Gradle->Runner->Delegate IDE build/run actions to gradle'`*_
+ *
+ * @since v0.1.1
+ *
+ * @author Simo Andreev <github.com/simo-andreev | simeon.zlatanov.andreev@gmail.com>
  */
 @Suppress("unused") // used during build, just not referenced in user code.
 @AutoService(Processor::class)
