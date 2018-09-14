@@ -7,7 +7,7 @@
 - []  README.md
 
 ## Patch goals:
-- [] Documentation
+- [x] Documentation
 
 ## Minor-v goals:
 - []  Add an annotation super-class to @ExposedModel - @PersistedModel - that only stores
@@ -17,3 +17,4 @@
 
 ## Major-v goals:
 - []  Implement (optional) security and authentication
+- []  Add script that launches the MongoDB instance at project-run, if it is missing.
