@@ -13,6 +13,19 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+// Kotlin docs tool module-specific config
+dokka {
+    // Specifies locations of project source on the Web.
+    // Dokka generates "source" links for each declaration.
+    linkMapping {
+        // Source directories
+        dir = "src/main/kotlin/bg/o/sim/application"
+        // URL showing where the source code can be accessed through the web browser
+        url = "https://github.com/simo-andreev/Mongrel/tree/master/application/src/main/kotlin/bg/o/sim/"
+        suffix = "#L" // Suffix which is used to append the line number to the URL. Use #L for GitHub
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
