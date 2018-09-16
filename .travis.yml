@@ -1,17 +1,6 @@
-sudo: true
+sudo: false
 language: java
 jdk:
-  oraclejdk8
-
-env:
-  global:
-    CC_TEST_REPORTER_ID=432b7af74cde04aae48f014c1cced555e270c79e8ff6f7dee4615e66f5ba111c
-
-before_script:
-  curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  chmod +x ./cc-test-reporter
-  ./cc-test-reporter before-build
-script:
-  ./gradlew test jacocoTestReport
-after_script:
-  ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+- oraclejdk8
+after_success:
+- bash <(curl -s https://codecov.io/bash)
