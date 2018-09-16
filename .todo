@@ -2,12 +2,13 @@
 ## TODOs for the whole project in general -i.e. features, refactor and version goals etc ##
 
 ## Chores:
+- [x] Documentation
 - []  Unit tests
 - []  Any other tests?
 - []  README.md
 
 ## Patch goals:
-- [x] Documentation
+- []  Unit tests
 
 ## Minor-v goals:
 - []  Add an annotation super-class to @ExposedModel - @PersistedModel - that only stores
