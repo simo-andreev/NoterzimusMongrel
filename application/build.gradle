@@ -5,6 +5,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'idea'
+apply plugin: "jacoco"
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
@@ -61,5 +62,13 @@ test {
     useJUnitPlatform()
     testLogging {
         events 'PASSED', 'FAILED', 'SKIPPED'
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.setEnabled(true)
+        html.setEnabled(false)
+        csv.setEnabled(false)
     }
 }
