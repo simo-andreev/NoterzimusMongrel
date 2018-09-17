@@ -15,9 +15,9 @@ dokka {
     // Dokka generates "source" links for each declaration.
     linkMapping {
         // Source directories
-        dir = "src/main/kotlin/bg/o/sim/annotations"
+        dir = "src/main/kotlin/bg/o/sim/bg.o.sim.annotations"
         // URL showing where the source code can be accessed through the web browser
-        url = "https://github.com/simo-andreev/Mongrel/tree/master/annotations/src/main/kotlin/bg/o/sim/"
+        url = "https://github.com/simo-andreev/Mongrel/tree/master/bg.o.sim.annotations/src/main/kotlin/bg/o/sim/"
         suffix = "#L" // Suffix which is used to append the line number to the URL. Use #L for GitHub
     }
 }
@@ -26,6 +26,13 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 
-    implementation "com.google.auto.service:auto-service:1.0-rc4"
-    kapt "com.google.auto.service:auto-service:1.0-rc4"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.1.1"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.1.1"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events 'PASSED', 'FAILED', 'SKIPPED'
+    }
 }
