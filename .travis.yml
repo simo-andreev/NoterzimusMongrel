@@ -9,10 +9,10 @@ jdk:
 before_script:
 - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
 - chmod +x ./cc-test-reporter
-- ./cc-test-reporter before-build
+-
 
 after_script:
 # Upload code coverage to code climate - with workaround for jacoco (Dec 2017)
 - cp application/build/reports/jacoco/test/jacocoTestReport.xml application/src/main/kotlin/jacoco.xml
 - cd application/src/main/kotlin
-- ../../../cc-test-reporter after-build -t jacoco --exit-code $TRAVIS_TEST_RESULT
+- ../../../../cc-test-reporter after-build -t jacoco --exit-code $TRAVIS_TEST_RESULT
