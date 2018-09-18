@@ -57,9 +57,13 @@ internal class ApiGenerator : AbstractProcessor() {
             // @ExposedModel's mappingRoot parameter. It will be passed as a
             // org.springframework.web.bind.annotation.RequestMapping's value in generated code.
             val mappingRoot = element.getAnnotation(annotationClass).mappingRoot
+            // @ExposedModel's exposeWebApi parameter. It will determine
+            // whether to add @RestController and @RequestMapping, thus exposing CRUD operations to web requests
+            val exposeWebApi = element.getAnnotation(annotationClass).exposeWebApi
+
             val pkg = processingEnv.elementUtils.getPackageOf(element).toString()
 
-            generateTemplatedClass(mappingRoot, pkg, element as TypeElement)
+            generateTemplatedClass(mappingRoot, pkg, element as TypeElement, exposeWebApi)
         }
 
         return true
@@ -71,7 +75,12 @@ internal class ApiGenerator : AbstractProcessor() {
      * Afterwards the templated String is written to a file in the `build` directory of
      * the element's module, under the same package directive as the `element` itself.
      */
-    private fun generateTemplatedClass(mappingRoot: String, pkg: String, element: TypeElement){
+    private fun generateTemplatedClass(mappingRoot: String, pkg: String, element: TypeElement, exposeWebApi: Boolean) {
+        val controllerTemplate = if (exposeWebApi) "@RestController @RequestMapping(\"$mappingRoot\")" else ""
+
+        val mongoRepoName = "${element.simpleName}_MongoRepo"
+        val crudApiName = "${element.simpleName}_CrudApi"
+
         val template = """
             package $pkg
 
@@ -80,20 +89,22 @@ internal class ApiGenerator : AbstractProcessor() {
             import bg.o.sim.application.web.CrudApiController
             import org.springframework.beans.factory.annotation.Autowired
             import org.springframework.data.mongodb.repository.MongoRepository
+            import org.springframework.stereotype.Service
             import org.springframework.web.bind.annotation.RequestMapping
             import org.springframework.web.bind.annotation.RestController
             import ${element.qualifiedName}
 
-            interface ${mappingRoot.capitalize()}Repo : MongoRepository<${element.simpleName}, String>
-            @RestController
-            @RequestMapping("$mappingRoot")
-            class ${mappingRoot.capitalize()}Api(@Autowired repo: ${mappingRoot.capitalize()}Repo) : CrudApiController<${element.simpleName}>(repo)
+            internal interface $mongoRepoName : MongoRepository<${element.simpleName}, String>
+
+            @Service
+            $controllerTemplate
+            class $crudApiName internal constructor(@Autowired repo: $mongoRepoName) : CrudApiController<${element.simpleName}>(repo)
         """.trimIndent()
 
 
         // build file name and get an appropriate directory to place it in.
         val fileName = "${mappingRoot.capitalize()}Repo"
-        val kaptKotlinGeneratedDir = "${processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]}/${pkg.replace("\\.", File.separator )}"
+        val kaptKotlinGeneratedDir = "${processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]}/${pkg.replace("\\.", File.separator)}"
 
         // Create any missing directories and write the new, generated, Kotlin file
         File(kaptKotlinGeneratedDir).mkdirs()
