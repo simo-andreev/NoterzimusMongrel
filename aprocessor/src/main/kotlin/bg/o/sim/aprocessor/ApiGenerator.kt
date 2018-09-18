@@ -10,7 +10,7 @@ import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
 
 /**
- * Creates files parsable by Spring Boot Starter's -data-rest, -data-mongodb-reactive and -web packages.
+ * Creates files parsable by Spring Boot Starter'populateClassTemplateString -data-rest, -data-mongodb-reactive and -web packages.
  * Spring then takes said generated classes and props-up a MongoDb CRUD controller and corresponding REST APIs.
  *
  *
@@ -54,10 +54,10 @@ internal class ApiGenerator : AbstractProcessor() {
                 return true
             }
 
-            // @ExposedModel's mappingRoot parameter. It will be passed as a
-            // org.springframework.web.bind.annotation.RequestMapping's value in generated code.
+            // @ExposedModel'populateClassTemplateString mappingRoot parameter. It will be passed as a
+            // org.springframework.web.bind.annotation.RequestMapping'populateClassTemplateString value in generated code.
             val mappingRoot = element.getAnnotation(annotationClass).mappingRoot
-            // @ExposedModel's exposeWebApi parameter. It will determine
+            // @ExposedModel'populateClassTemplateString exposeWebApi parameter. It will determine
             // whether to add @RestController and @RequestMapping, thus exposing CRUD operations to web requests
             val exposeWebApi = element.getAnnotation(annotationClass).exposeWebApi
 
@@ -70,37 +70,14 @@ internal class ApiGenerator : AbstractProcessor() {
     }
 
     /**
-     * Populate a Kotlin String template, with content similar to
+     * Retrieves the desired class content in a templated Kotlin String. Content is similar to
      * the longform example in [the example][bg.o.sim.application.model.TransactionApi].
+     *
      * Afterwards the templated String is written to a file in the `build` directory of
-     * the element's module, under the same package directive as the `element` itself.
+     * the element'populateClassTemplateString module, under the same package directive as the `element` itself.
      */
     private fun generateTemplatedClass(mappingRoot: String, pkg: String, element: TypeElement, exposeWebApi: Boolean) {
-        val controllerTemplate = if (exposeWebApi) "@RestController @RequestMapping(\"$mappingRoot\")" else ""
-
-        val mongoRepoName = "${element.simpleName}_MongoRepo"
-        val crudApiName = "${element.simpleName}_CrudApi"
-
-        val template = """
-            package $pkg
-
-            import bg.o.sim.annotations.ExposedModel
-            import bg.o.sim.application.web.BaseEntity
-            import bg.o.sim.application.web.CrudApiController
-            import org.springframework.beans.factory.annotation.Autowired
-            import org.springframework.data.mongodb.repository.MongoRepository
-            import org.springframework.stereotype.Service
-            import org.springframework.web.bind.annotation.RequestMapping
-            import org.springframework.web.bind.annotation.RestController
-            import ${element.qualifiedName}
-
-            internal interface $mongoRepoName : MongoRepository<${element.simpleName}, String>
-
-            @Service
-            $controllerTemplate
-            class $crudApiName internal constructor(@Autowired repo: $mongoRepoName) : CrudApiController<${element.simpleName}>(repo)
-        """.trimIndent()
-
+        val template = populateClassTemplateString(exposeWebApi, mappingRoot, element, pkg)
 
         // build file name and get an appropriate directory to place it in.
         val fileName = "${mappingRoot.capitalize()}Repo"
@@ -111,6 +88,41 @@ internal class ApiGenerator : AbstractProcessor() {
         File(kaptKotlinGeneratedDir, "$fileName.kt").apply { createNewFile() }.printWriter().use { out ->
             out.print(template)
         }
+    }
+
+    /**
+     * Populate a class template String using passed data.
+     * @param exposeWebApi determines if @RstController and @RequestMapping will be added to [CrudApi][bg.o.sim.application.web.CrudApiController].
+     * @param mappingRoot passed to [@RequestMapping.value][org.springframework.web.bind.annotation.RequestMapping.value].
+     *  If [exposeWebApi] is `false`, `mappingRoot` is ignored.
+     * @param element the [TypeElement] that corresponds to the `data model` class.
+     * @param pkg the package directive of the [element]. Added as-is to the generated class, thus mirroring user-code structure in built files.
+     */
+    private fun populateClassTemplateString(exposeWebApi: Boolean, mappingRoot: String, element: TypeElement, pkg: String): String {
+        val controllerTemplate = if (exposeWebApi) "@RestController @RequestMapping(\"$mappingRoot\")" else ""
+
+        val mongoRepoName = "${element.simpleName}_MongoRepo"
+        val crudApiName = "${element.simpleName}_CrudApi"
+
+        return """
+                package $pkg
+
+                import bg.o.sim.annotations.ExposedModel
+                import bg.o.sim.application.web.BaseEntity
+                import bg.o.sim.application.web.CrudApiController
+                import org.springframework.beans.factory.annotation.Autowired
+                import org.springframework.data.mongodb.repository.MongoRepository
+                import org.springframework.stereotype.Service
+                import org.springframework.web.bind.annotation.RequestMapping
+                import org.springframework.web.bind.annotation.RestController
+                import ${element.qualifiedName}
+
+                internal interface $mongoRepoName : MongoRepository<${element.simpleName}, String>
+
+                @Service
+                $controllerTemplate
+                class $crudApiName internal constructor(@Autowired repo: $mongoRepoName) : CrudApiController<${element.simpleName}>(repo)
+            """.trimIndent()
     }
 }
 
