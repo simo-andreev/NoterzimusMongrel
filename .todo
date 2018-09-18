@@ -11,7 +11,7 @@
 - []  Unit tests
 
 ## Minor-v goals:
-- []  Add an annotation super-class to @ExposedModel - @PersistedModel - that only stores
+- [x]  Add an annotation super-class to @ExposedModel - @PersistedModel - that only stores
         (and I guess provides an internal CRUD API) - i.e. does not add @RestController to the Repo//Api class
 + []  Add an optional - mappedBy : KClass//Class - parameter to @ExposedModel that lets user provide CrudApi sub-class
         implementing custom persistence and exposure logic
