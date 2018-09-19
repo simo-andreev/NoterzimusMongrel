@@ -18,4 +18,3 @@
 
 ## Major-v goals:
 - []  Implement (optional) security and authentication
-- []  Add script that launches the MongoDB instance at project-run, if it is missing.
